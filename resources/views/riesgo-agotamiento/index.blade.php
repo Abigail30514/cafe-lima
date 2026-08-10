@@ -29,36 +29,31 @@
     </h2>
 
     <p class="text-muted mb-0">
-        Evaluación basada en el estado actual y comportamiento reciente del consumo.
+        Evaluación del riesgo según el estado actual y el comportamiento reciente del consumo.
     </p>
 
 </div>
 
 
-<div class="alert alert-light border mb-4">
+<div
+    class="d-flex align-items-center gap-2 px-3 py-2 mb-4 rounded-3"
+    style="
+        background: #f8f9fa;
+        border: 1px solid #e5e7eb;
+    "
+>
+    <i class="bi bi-info-circle-fill text-primary"></i>
 
-    <div class="d-flex align-items-start gap-3">
+    <small class="text-muted">
 
-        <i class="bi bi-info-circle text-primary fs-4"></i>
+        <strong class="text-dark">
+            Cálculo del riesgo:
+        </strong>
 
-        <div>
+        considera el estado actual del plato, el promedio diario
+        y la tendencia reciente del consumo.
 
-            <strong>
-                ¿Cómo se calcula?
-            </strong>
-
-            <div class="text-muted small mt-1">
-
-                El nivel de riesgo considera el estado actual del plato,
-                su promedio diario de consumo y la variación frente al
-                periodo anterior.
-
-            </div>
-
-        </div>
-
-    </div>
-
+    </small>
 </div>
 
 

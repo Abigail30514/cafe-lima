@@ -1,76 +1,79 @@
 <!DOCTYPE html>
+
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
 
     <title>
-        Reporte de disponibilidad
+        Reporte operativo - Café de Lima
     </title>
 
+
     <style>
+
         @page {
-            margin: 25px;
+            margin: 22px;
         }
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 11px;
+            font-size: 9px;
             color: #212529;
         }
 
         .header {
             border-bottom: 3px solid #6f4e37;
-            padding-bottom: 12px;
-            margin-bottom: 18px;
+            padding-bottom: 10px;
+            margin-bottom: 14px;
         }
 
         .header h1 {
             margin: 0;
             color: #6f4e37;
-            font-size: 23px;
+            font-size: 21px;
         }
 
         .header p {
-            margin: 5px 0 0;
+            margin: 4px 0 0;
             color: #6c757d;
         }
 
         .date {
             text-align: right;
-            font-size: 10px;
-            margin-top: -35px;
+            font-size: 9px;
+            margin-top: -32px;
         }
 
         .summary {
             width: 100%;
-            margin-bottom: 18px;
-            border-spacing: 8px;
+            margin-bottom: 12px;
+            border-spacing: 5px;
         }
 
         .summary td {
             border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 10px;
+            padding: 7px;
             text-align: center;
         }
 
         .summary .number {
             display: block;
-            font-size: 20px;
+            font-size: 17px;
             font-weight: bold;
-            margin-bottom: 3px;
         }
 
         .summary .label {
             color: #6c757d;
-            font-size: 10px;
+            font-size: 8px;
         }
 
         .filters {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 8px;
+            margin-bottom: 12px;
         }
 
         .filters strong {
@@ -85,14 +88,14 @@
         table.products th {
             background: #212529;
             color: white;
-            padding: 9px;
+            padding: 6px;
             text-align: left;
-            font-size: 10px;
+            font-size: 8px;
         }
 
         table.products td {
             border: 1px solid #dee2e6;
-            padding: 8px;
+            padding: 6px;
             vertical-align: middle;
         }
 
@@ -101,11 +104,11 @@
         }
 
         .status {
-            padding: 4px 7px;
-            border-radius: 4px;
+            padding: 3px 5px;
+            border-radius: 3px;
             color: white;
             font-weight: bold;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .available {
@@ -120,9 +123,29 @@
             background: #dc3545;
         }
 
+        .risk-low {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .risk-medium {
+            color: #b58100;
+            font-weight: bold;
+        }
+
+        .risk-high {
+            color: #fd7e14;
+            font-weight: bold;
+        }
+
+        .risk-critical {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
         .no-results {
             text-align: center;
-            padding: 30px;
+            padding: 25px;
             color: #6c757d;
         }
 
@@ -131,176 +154,390 @@
             bottom: -10px;
             left: 0;
             right: 0;
+
             text-align: center;
+
             color: #6c757d;
-            font-size: 9px;
+            font-size: 8px;
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <div class="header">
-        <h1>Café de Lima</h1>
 
-        <p>
-            Reporte de disponibilidad de productos
-        </p>
+<div class="header">
 
-        <div class="date">
-            Generado:
-            {{ now()->format('d/m/Y H:i') }}
-        </div>
+    <h1>
+        Café de Lima
+    </h1>
+
+    <p>
+        Reporte operativo de disponibilidad, consumo y riesgo de agotamiento
+    </p>
+
+
+    <div class="date">
+
+        Generado:
+
+        {{ now()->format('d/m/Y H:i') }}
+
     </div>
 
-    <table class="summary">
-        <tr>
-            <td>
-                <span class="number">
-                    {{ $totalProductos }}
-                </span>
+</div>
 
-                <span class="label">
-                    Total de productos
-                </span>
-            </td>
 
-            <td>
-                <span class="number">
-                    {{ $disponibles }}
-                </span>
+{{-- RESUMEN --}}
 
-                <span class="label">
-                    Disponibles
-                </span>
-            </td>
+<table class="summary">
 
-            <td>
-                <span class="number">
-                    {{ $bajoStock }}
-                </span>
+    <tr>
 
-                <span class="label">
-                    Bajo stock
-                </span>
-            </td>
+        <td>
 
-            <td>
-                <span class="number">
-                    {{ $agotados }}
-                </span>
+            <span class="number">
+                {{ $totalProductos }}
+            </span>
 
-                <span class="label">
-                    Agotados
-                </span>
-            </td>
-        </tr>
-    </table>
+            <span class="label">
+                Platos analizados
+            </span>
 
-    <div class="filters">
-        <strong>Filtros aplicados:</strong>
+        </td>
 
-        Categoría:
-        {{ !empty($datos['categoria'])
-            ? 'Categoría seleccionada'
-            : 'Todas' }}
 
-        &nbsp; | &nbsp;
+        <td>
 
-        Estado:
-        @if(!empty($datos['estado']))
-            @if($datos['estado'] == 1)
-                Disponible
-            @elseif($datos['estado'] == 2)
+            <span class="number">
+                {{ $totalConsumo }}
+            </span>
+
+            <span class="label">
+                Consumo del periodo
+            </span>
+
+        </td>
+
+
+        <td>
+
+            <span class="number">
+                {{ $riesgosAltosCriticos }}
+            </span>
+
+            <span class="label">
+                Riesgo alto/crítico
+            </span>
+
+        </td>
+
+
+        <td>
+
+            <span class="number">
+                {{ $disponibles }}
+            </span>
+
+            <span class="label">
+                Disponibles
+            </span>
+
+        </td>
+
+
+        <td>
+
+            <span class="number">
+                {{ $bajoStock }}
+            </span>
+
+            <span class="label">
                 Bajo stock
-            @else
-                Agotado
-            @endif
+            </span>
+
+        </td>
+
+
+        <td>
+
+            <span class="number">
+                {{ $agotados }}
+            </span>
+
+            <span class="label">
+                Agotados
+            </span>
+
+        </td>
+
+    </tr>
+
+</table>
+
+
+{{-- FILTROS --}}
+
+<div class="filters">
+
+    <strong>Filtros aplicados:</strong>
+
+
+    Categoría:
+
+    {{ $categoriaSeleccionada
+        ?: 'Todas' }}
+
+
+    &nbsp; | &nbsp;
+
+
+    Estado:
+
+    @if(!empty($datos['estado']))
+
+        @if($datos['estado'] == 1)
+
+            Disponible
+
+        @elseif($datos['estado'] == 2)
+
+            Bajo stock
+
         @else
-            Todos
+
+            Agotado
+
         @endif
 
-        &nbsp; | &nbsp;
+    @else
 
-        Desde:
-        {{ !empty($datos['fecha_inicio'])
-            ? \Carbon\Carbon::parse($datos['fecha_inicio'])->format('d/m/Y')
-            : 'Sin fecha' }}
+        Todos
 
-        &nbsp; | &nbsp;
+    @endif
 
-        Hasta:
-        {{ !empty($datos['fecha_fin'])
-            ? \Carbon\Carbon::parse($datos['fecha_fin'])->format('d/m/Y')
-            : 'Sin fecha' }}
-    </div>
 
-    <table class="products">
-        <thead>
+    &nbsp; | &nbsp;
+
+
+    Periodo:
+
+    {{ \Carbon\Carbon::parse($fechaInicio)
+        ->format('d/m/Y') }}
+
+    -
+
+    {{ \Carbon\Carbon::parse($fechaFin)
+        ->format('d/m/Y') }}
+
+</div>
+
+
+{{-- TABLA --}}
+
+<table class="products">
+
+    <thead>
+
+        <tr>
+
+            <th>
+                ID
+            </th>
+
+            <th>
+                Plato
+            </th>
+
+            <th>
+                Categoría
+            </th>
+
+            <th>
+                Estado
+            </th>
+
+            <th>
+                Consumo
+            </th>
+
+            <th>
+                Prom./día
+            </th>
+
+            <th>
+                Riesgo
+            </th>
+
+            <th>
+                Puntaje
+            </th>
+
+            <th>
+                Observación
+            </th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody>
+
+        @forelse($reportes as $item)
+
+            @php
+                $producto = $item['producto'];
+            @endphp
+
+
             <tr>
-                <th>ID</th>
-                <th>Producto</th>
-                <th>Categoría</th>
-                <th>Estado actual</th>
-                <th>Observación</th>
-                <th>Última actualización</th>
+
+                <td>
+                    {{ $producto->id }}
+                </td>
+
+
+                <td>
+
+                    <strong>
+                        {{ $producto->nombre }}
+                    </strong>
+
+                </td>
+
+
+                <td>
+
+                    {{ $producto->category?->nombre
+                        ?? 'Sin categoría' }}
+
+                </td>
+
+
+                <td>
+
+                    @if($producto->estado == 1)
+
+                        <span class="status available">
+                            Disponible
+                        </span>
+
+                    @elseif($producto->estado == 2)
+
+                        <span class="status low-stock">
+                            Bajo stock
+                        </span>
+
+                    @else
+
+                        <span class="status out-of-stock">
+                            Agotado
+                        </span>
+
+                    @endif
+
+                </td>
+
+
+                <td>
+
+                    {{ $item['consumo_periodo'] }}
+
+                </td>
+
+
+                <td>
+
+                    {{ number_format(
+                        $item['promedio_periodo'],
+                        2
+                    ) }}
+
+                </td>
+
+
+                <td>
+
+                    @if($item['riesgo'] === 'Critico')
+
+                        <span class="risk-critical">
+                            Crítico
+                        </span>
+
+                    @elseif($item['riesgo'] === 'Alto')
+
+                        <span class="risk-high">
+                            Alto
+                        </span>
+
+                    @elseif($item['riesgo'] === 'Medio')
+
+                        <span class="risk-medium">
+                            Medio
+                        </span>
+
+                    @else
+
+                        <span class="risk-low">
+                            Bajo
+                        </span>
+
+                    @endif
+
+                </td>
+
+
+                <td>
+
+                    {{ $item['puntaje'] }}/100
+
+                </td>
+
+
+                <td>
+
+                    {{ $producto->observacion
+                        ?: 'Sin observación' }}
+
+                </td>
+
             </tr>
-        </thead>
 
-        <tbody>
-            @forelse($productos as $producto)
-                <tr>
-                    <td>
-                        {{ $producto->id }}
-                    </td>
 
-                    <td>
-                        <strong>
-                            {{ $producto->nombre }}
-                        </strong>
-                    </td>
+        @empty
 
-                    <td>
-                        {{ $producto->category?->nombre ?? 'Sin categoría' }}
-                    </td>
+            <tr>
 
-                    <td>
-                        @if($producto->estado == 1)
-                            <span class="status available">
-                                Disponible
-                            </span>
-                        @elseif($producto->estado == 2)
-                            <span class="status low-stock">
-                                Bajo stock
-                            </span>
-                        @else
-                            <span class="status out-of-stock">
-                                Agotado
-                            </span>
-                        @endif
-                    </td>
+                <td
+                    colspan="9"
+                    class="no-results"
+                >
 
-                    <td>
-                        {{ $producto->observacion ?: 'Sin observación' }}
-                    </td>
+                    No se encontraron datos con los filtros seleccionados.
 
-                    <td>
-                        {{ $producto->updated_at?->format('d/m/Y H:i') }}
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="no-results">
-                        No se encontraron productos con los filtros seleccionados.
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+                </td>
 
-    <div class="footer">
-        Sistema de Gestión de Disponibilidad — Restaurante Café de Lima
-    </div>
+            </tr>
+
+        @endforelse
+
+    </tbody>
+
+</table>
+
+
+<div class="footer">
+
+    Sistema de Gestión de Disponibilidad y Consumo
+    — Restaurante Café de Lima
+
+</div>
+
 
 </body>
+
 </html>
