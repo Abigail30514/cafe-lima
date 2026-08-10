@@ -34,4 +34,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductStatusHistory::class);
     }
+
+    public function consumptions()
+    {
+        return $this->hasMany(ProductConsumption::class);
+    }
 }

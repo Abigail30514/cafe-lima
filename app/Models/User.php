@@ -36,6 +36,11 @@ class User extends Authenticatable
         };
     }
 
+    public function productConsumptions()
+    {
+        return $this->hasMany(ProductConsumption::class);
+    }
+
 
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;

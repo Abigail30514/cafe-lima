@@ -5,10 +5,28 @@
 @section('content')
 
 <style>
+
     .dashboard-card {
         border: 0;
         border-radius: 16px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+    }
+
+    .metric-card {
+        border: 0;
+        border-radius: 15px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .metric-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
     }
 
     .chart-container {
@@ -29,7 +47,7 @@
 
     .chart-center strong {
         display: block;
-        font-size: 32px;
+        font-size: 30px;
         line-height: 1;
     }
 
@@ -43,281 +61,606 @@
         height: 10px;
         display: inline-block;
         border-radius: 50%;
-        margin-right: 5px;
+        margin-right: 6px;
     }
 
-    #calendario {
-        font-size: 11px;
-    }
-
-    #calendario .fc-toolbar {
-        margin-bottom: 10px;
-    }
-
-    #calendario .fc-toolbar-title {
-        font-size: 16px;
-        font-weight: 700;
-        text-transform: capitalize;
-    }
-
-    #calendario .fc-button {
-        padding: 3px 7px;
-        font-size: 11px;
-    }
-
-    #calendario .fc-daygrid-day-frame {
-        min-height: 31px;
-    }
-
-    #calendario .fc-col-header-cell-cushion,
-    #calendario .fc-daygrid-day-number {
-        color: #212529;
-        text-decoration: none;
-    }
-
-    #calendario .fc-day-today {
-        background: rgba(13, 110, 253, 0.12) !important;
-    }
-
-    .today-box {
-        min-width: 110px;
-        border-radius: 14px;
-        background: #f4f7fb;
-        text-align: center;
-        padding: 12px;
-    }
-
-    .today-day {
-        font-size: 12px;
-        color: #6c757d;
-        text-transform: capitalize;
-    }
-
-    .today-number {
-        font-size: 32px;
-        font-weight: 700;
-        line-height: 1.1;
-    }
-
-    .today-month {
-        font-size: 13px;
-        color: #0d6efd;
-        text-transform: capitalize;
-    }
-
-    .timeline-item {
+    .consumption-chart {
+        height: 290px;
         position: relative;
-        padding-left: 28px;
-        padding-bottom: 20px;
     }
 
-    .timeline-item:not(:last-child)::before {
-        content: "";
-        position: absolute;
-        left: 8px;
-        top: 17px;
-        bottom: 0;
-        width: 2px;
-        background: #dee2e6;
+    .risk-score {
+        min-width: 65px;
+        text-align: center;
+        display: inline-block;
     }
 
-    .timeline-dot {
-        position: absolute;
-        left: 2px;
-        top: 5px;
-        width: 14px;
-        height: 14px;
+    .progress-product {
+        height: 7px;
+        border-radius: 10px;
+    }
+
+    .activity-item {
+        border-bottom: 1px solid #eeeeee;
+        padding: 12px 0;
+    }
+
+    .activity-item:last-child {
+        border-bottom: 0;
+    }
+
+    .activity-icon {
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
-    .badge-prioridad{
-    min-width:90px;
-    text-align:center;
-    }
-
-    .badge-estado{
-        min-width:90px;
-        text-align:center;
-    }
 </style>
+
+
+{{-- CABECERA --}}
 
 <div class="d-flex justify-content-between align-items-start mb-4">
 
     <div>
+
         <h2 class="fw-bold mb-1">
             Resumen operativo
         </h2>
 
         <p class="text-muted mb-0">
-            Situación actual de la disponibilidad del restaurante.
+            Estado actual del consumo, disponibilidad y riesgo de agotamiento.
         </p>
+
     </div>
 
+
     <div class="text-end">
+
         <small class="text-muted d-block">
             Última actualización
         </small>
 
         <strong>
+
             @if($ultimaActualizacion)
-                {{ \Carbon\Carbon::parse($ultimaActualizacion)->format('d/m/Y H:i') }}
+
+                <i class="bi bi-clock me-1"></i>
+
+                {{ $ultimaActualizacion->format('d/m/Y H:i') }}
+
             @else
+
                 Sin registros
+
             @endif
+
         </strong>
+
     </div>
 
 </div>
 
+
+{{-- ================================================================ --}}
+{{-- INDICADORES PRINCIPALES --}}
+{{-- ================================================================ --}}
+
+<div class="row g-3 mb-4">
+
+
+    {{-- CONSUMO HOY --}}
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card metric-card h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div
+                        class="metric-icon bg-success-subtle text-success"
+                    >
+                        <i class="bi bi-cart-check-fill"></i>
+                    </div>
+
+                    <div>
+
+                        <small class="text-muted">
+                            Consumo de hoy
+                        </small>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ $consumoHoy }}
+                        </h3>
+
+                        <small class="text-muted">
+                            unidades
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- CONSUMO 7 DÍAS --}}
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card metric-card h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div
+                        class="metric-icon bg-primary-subtle text-primary"
+                    >
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+
+                    <div>
+
+                        <small class="text-muted">
+                            Consumo últimos 7 días
+                        </small>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ $consumo7Dias }}
+                        </h3>
+
+                        <small class="text-primary">
+                            Prom. {{ $promedioConsumo7Dias }}/día
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- RIESGO ALTO --}}
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card metric-card h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div
+                        class="metric-icon bg-warning-subtle text-warning"
+                    >
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+
+                    <div>
+
+                        <small class="text-muted">
+                            Riesgo alto
+                        </small>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ $riesgosAltos }}
+                        </h3>
+
+                        <small class="text-muted">
+                            platos
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {{-- RIESGO CRÍTICO --}}
+
+    <div class="col-xl-3 col-md-6">
+
+        <div class="card metric-card h-100">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div
+                        class="metric-icon bg-danger-subtle text-danger"
+                    >
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                    </div>
+
+                    <div>
+
+                        <small class="text-muted">
+                            Riesgo crítico
+                        </small>
+
+                        <h3 class="fw-bold mb-0">
+                            {{ $riesgosCriticos }}
+                        </h3>
+
+                        <small class="text-danger">
+                            requieren atención
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{{-- ================================================================ --}}
+{{-- DISPONIBILIDAD + TOP RIESGOS --}}
+{{-- ================================================================ --}}
+
 <div class="row g-4 mb-4">
 
-    {{-- Dona --}}
+
+    {{-- DISPONIBILIDAD --}}
+
     <div class="col-lg-5">
 
         <div class="card dashboard-card h-100">
+
             <div class="card-body p-4">
 
                 <h5 class="fw-bold mb-3">
+
                     <i class="bi bi-pie-chart-fill text-primary me-2"></i>
+
                     Disponibilidad general
+
                 </h5>
+
 
                 @if($totalProductos > 0)
 
                     @php
-                        $porcentajeDisponibles = round(($disponibles / $totalProductos) * 100);
-                        $porcentajeBajoStock = round(($bajoStock / $totalProductos) * 100);
-                        $porcentajeAgotados = round(($agotados / $totalProductos) * 100);
+
+                        $porcentajeDisponibles =
+                            round(
+                                ($disponibles / $totalProductos) * 100
+                            );
+
+                        $porcentajeBajoStock =
+                            round(
+                                ($bajoStock / $totalProductos) * 100
+                            );
+
+                        $porcentajeAgotados =
+                            round(
+                                ($agotados / $totalProductos) * 100
+                            );
+
                     @endphp
+
 
                     <div class="chart-container">
 
                         <canvas id="graficoDisponibilidad"></canvas>
 
                         <div class="chart-center">
-                            <strong>{{ $totalProductos }}</strong>
-                            <span>productos</span>
+
+                            <strong>
+                                {{ $totalProductos }}
+                            </strong>
+
+                            <span>
+                                platos
+                            </span>
+
                         </div>
 
                     </div>
+
 
                     <div class="row text-center mt-4">
 
                         <div class="col-4">
 
                             <div class="fw-bold text-success fs-5">
+
                                 {{ $porcentajeDisponibles }}%
+
                             </div>
 
                             <small class="text-muted">
+
                                 <span
                                     class="indicator-dot"
-                                    style="background: #198754;"
+                                    style="background:#198754;"
                                 ></span>
-                                Disponibles
+
+                                Disponible
+
                             </small>
 
                         </div>
+
 
                         <div class="col-4 border-start border-end">
 
                             <div class="fw-bold text-warning fs-5">
+
                                 {{ $porcentajeBajoStock }}%
+
                             </div>
 
                             <small class="text-muted">
+
                                 <span
                                     class="indicator-dot"
-                                    style="background: #ffc107;"
+                                    style="background:#ffc107;"
                                 ></span>
+
                                 Bajo stock
+
                             </small>
 
                         </div>
 
+
                         <div class="col-4">
 
                             <div class="fw-bold text-danger fs-5">
+
                                 {{ $porcentajeAgotados }}%
+
                             </div>
 
                             <small class="text-muted">
+
                                 <span
                                     class="indicator-dot"
-                                    style="background: #dc3545;"
+                                    style="background:#dc3545;"
                                 ></span>
-                                Agotados
+
+                                Agotado
+
                             </small>
 
                         </div>
 
                     </div>
 
+
                 @else
 
                     <div class="text-center text-muted py-5">
-                        No hay productos registrados.
+
+                        No existen platos registrados.
+
                     </div>
 
                 @endif
 
             </div>
+
         </div>
 
     </div>
 
-    {{-- Calendario --}}
+
+    {{-- TOP RIESGOS --}}
+
     <div class="col-lg-7">
 
         <div class="card dashboard-card h-100">
+
             <div class="card-body p-4">
 
-                <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
 
                     <div>
+
                         <h5 class="fw-bold mb-1">
-                            <i class="bi bi-calendar3 text-primary me-2"></i>
-                            Calendario
+
+                            <i class="bi bi-speedometer2 text-danger me-2"></i>
+
+                            Platos con mayor riesgo
+
                         </h5>
 
                         <small class="text-muted">
-                            Selecciona una fecha del calendario.
+
+                            Productos priorizados por el algoritmo.
+
                         </small>
-                    </div>
-
-                    <div class="today-box">
-
-                        <div class="today-day">
-                            {{ now()->translatedFormat('l') }}
-                        </div>
-
-                        <div class="today-number">
-                            {{ now()->format('d') }}
-                        </div>
-
-                        <div class="today-month">
-                            {{ now()->translatedFormat('F') }}
-                        </div>
 
                     </div>
+
+
+                    @if(Auth::user()->esAdministrador() || Auth::user()->esCocina())
+
+                        <a
+                            href="{{ route('riesgo-agotamiento.index') }}"
+                            class="btn btn-outline-primary btn-sm"
+                        >
+                            Ver análisis
+                        </a>
+
+                    @endif
 
                 </div>
 
-                <div id="calendario"></div>
 
-                <div
-                    id="fechaSeleccionada"
-                    class="alert alert-primary py-2 mt-2 mb-0 d-none"
-                ></div>
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Plato</th>
+                                <th>Estado</th>
+                                <th>Riesgo</th>
+                                <th class="text-center">Puntaje</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @forelse($topRiesgos as $item)
+
+                                @php
+                                    $producto = $item['product'];
+                                @endphp
+
+                                <tr>
+
+                                    <td class="fw-semibold">
+
+                                        {{ $producto->nombre }}
+
+                                        <div class="small text-muted">
+
+                                            {{ $producto->category?->nombre
+                                                ?? 'Sin categoría' }}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        @if($producto->estado == 1)
+
+                                            <span class="badge bg-success">
+                                                Disponible
+                                            </span>
+
+                                        @elseif($producto->estado == 2)
+
+                                            <span class="badge bg-warning text-dark">
+                                                Bajo stock
+                                            </span>
+
+                                        @else
+
+                                            <span class="badge bg-danger">
+                                                Agotado
+                                            </span>
+
+                                        @endif
+
+                                    </td>
+
+
+                                    <td>
+
+                                        @if($item['nivel'] === 'Critico')
+
+                                            <span class="badge bg-danger">
+                                                Crítico
+                                            </span>
+
+                                        @elseif($item['nivel'] === 'Alto')
+
+                                            <span
+                                                class="badge"
+                                                style="background:#fd7e14;"
+                                            >
+                                                Alto
+                                            </span>
+
+                                        @elseif($item['nivel'] === 'Medio')
+
+                                            <span class="badge bg-warning text-dark">
+                                                Medio
+                                            </span>
+
+                                        @else
+
+                                            <span class="badge bg-success">
+                                                Bajo
+                                            </span>
+
+                                        @endif
+
+                                    </td>
+
+
+                                    <td class="text-center fw-bold">
+
+                                        <span class="risk-score">
+
+                                            {{ $item['puntaje'] }}/100
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            @empty
+
+                                <tr>
+
+                                    <td
+                                        colspan="4"
+                                        class="text-center py-4 text-muted"
+                                    >
+
+                                        No existen productos para analizar.
+
+                                    </td>
+
+                                </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
+
         </div>
 
     </div>
 
 </div>
 
-{{-- Alertas --}}
+
+{{-- ================================================================ --}}
+{{-- COMPORTAMIENTO DEL CONSUMO --}}
+{{-- ================================================================ --}}
+
 <div class="card dashboard-card mb-4">
 
     <div class="card-body p-4">
@@ -325,52 +668,118 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
 
             <div>
+
                 <h5 class="fw-bold mb-1">
-                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
-                    Alertas importantes
+
+                    <i class="bi bi-graph-up text-primary me-2"></i>
+
+                    Comportamiento del consumo
+
                 </h5>
 
                 <small class="text-muted">
-                    Productos que requieren atención inmediata.
+
+                    Evolución de las unidades consumidas durante los últimos 7 días.
+
                 </small>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-
-                @if($totalAlertasCriticas > 0)
-
-                    <span class="badge bg-dark rounded-pill">
-                        <i class="bi bi-star-fill text-warning me-1"></i>
-                        {{ $totalAlertasCriticas }} críticas
-                    </span>
-
-                @endif
-
-                <span class="badge bg-danger rounded-pill">
-                    {{ $productosCriticos->count() }} alertas
-                </span>
 
             </div>
+
+
+            @if(Auth::user()->esAdministrador() || Auth::user()->esCocina())
+
+                <a
+                    href="{{ route('analisis-consumo.index') }}"
+                    class="btn btn-outline-primary btn-sm"
+                >
+                    Ver análisis completo
+                </a>
+
+            @endif
 
         </div>
+
+
+        <div class="consumption-chart">
+
+            <canvas id="graficoConsumo"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{{-- ================================================================ --}}
+{{-- ALERTAS Y RECOMENDACIONES --}}
+{{-- ================================================================ --}}
+
+<div class="card dashboard-card mb-4">
+
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <div>
+
+                <h5 class="fw-bold mb-1">
+
+                    <i class="bi bi-bell-fill text-warning me-2"></i>
+
+                    Alertas y recomendaciones
+
+                </h5>
+
+                <small class="text-muted">
+
+                    Productos que requieren seguimiento o reposición.
+
+                </small>
+
+            </div>
+
+
+            @if(Auth::user()->esAdministrador() || Auth::user()->esCocina())
+
+                <a
+                    href="{{ route('alertas-reposicion.index') }}"
+                    class="btn btn-outline-primary btn-sm"
+                >
+                    Ver todas
+                </a>
+
+            @endif
+
+        </div>
+
 
         <div class="table-responsive">
 
             <table class="table table-hover align-middle mb-0">
 
                 <thead class="table-light">
+
                     <tr>
-                        <th>Producto</th>
-                        <th>Categoría</th>
+                        <th>Plato</th>
                         <th>Estado</th>
-                        <th>Prioridad</th>
-                        <th>Observación</th>
+                        <th>Riesgo</th>
+                        <th class="text-center">
+                            Consumo 7 días
+                        </th>
+                        <th>Recomendación</th>
                     </tr>
+
                 </thead>
+
 
                 <tbody>
 
-                    @forelse($productosCriticos as $producto)
+                    @forelse($alertasRecomendaciones as $item)
+
+                        @php
+                            $producto = $item['product'];
+                        @endphp
 
                         <tr>
 
@@ -378,85 +787,105 @@
 
                                 {{ $producto->nombre }}
 
-                                @if($producto->destacado)
+                            </td>
 
-                                    <span
-                                        class="badge bg-warning text-dark ms-1"
-                                        title="Producto recomendado"
-                                    >
-                                        <i class="bi bi-star-fill"></i>
-                                        Recomendado
+
+                            <td>
+
+                                @if($producto->estado == 1)
+
+                                    <span class="badge bg-success">
+                                        Disponible
                                     </span>
 
-                                @endif
+                                @elseif($producto->estado == 2)
 
-                            </td>
-
-                            <td>
-                                {{ $producto->category->nombre ?? 'Sin categoría' }}
-                            </td>
-
-                            <td>
-                                @if($producto->estado == 2)
-
-                                    <span class="badge bg-warning text-dark badge-estado">
+                                    <span class="badge bg-warning text-dark">
                                         Bajo stock
                                     </span>
 
                                 @else
 
-                                    <span class="badge bg-danger badge-estado">
+                                    <span class="badge bg-danger">
                                         Agotado
                                     </span>
 
                                 @endif
+
                             </td>
+
 
                             <td>
 
-                                @if($producto->estado == 3 && $producto->destacado)
+                                @if($item['nivel'] === 'Critico')
 
-                                    <span class="badge bg-dark badge-prioridad">
-                                        <i class="bi bi-exclamation-octagon-fill text-warning me-1"></i>
-                                        Crítica
+                                    <span class="badge bg-danger">
+                                        Crítico
                                     </span>
 
-                                @elseif($producto->estado == 3)
+                                @elseif($item['nivel'] === 'Alto')
 
-                                    <span class="badge bg-danger badge-prioridad">
-                                        <i class="bi bi-exclamation-circle-fill me-1"></i>
-                                        Alta
+                                    <span
+                                        class="badge"
+                                        style="background:#fd7e14;"
+                                    >
+                                        Alto
                                     </span>
 
                                 @else
 
-                                    <span class="badge bg-warning text-dark badge-prioridad">
-                                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                                        Media
+                                    <span class="badge bg-warning text-dark">
+                                        Medio
                                     </span>
 
                                 @endif
 
                             </td>
 
-                            <td>
-                                {{ $producto->observacion ?: 'Sin observación' }}
+
+                            <td class="text-center fw-semibold">
+
+                                {{ $item['consumo_actual'] }}
+
+                            </td>
+
+
+                            <td style="max-width:420px;">
+
+                                {{ $item['recomendacion'] }}
+
                             </td>
 
                         </tr>
 
+
                     @empty
 
                         <tr>
-                            <td colspan="5" class="text-center py-4">
 
-                                <i class="bi bi-check-circle-fill text-success fs-2"></i>
+                            <td
+                                colspan="5"
+                                class="text-center py-4"
+                            >
+
+                                <i
+                                    class="bi bi-check-circle-fill text-success fs-2"
+                                ></i>
 
                                 <p class="fw-semibold mt-2 mb-0">
-                                    No existen alertas pendientes.
+
+                                    No existen alertas preventivas.
+
                                 </p>
 
+                                <small class="text-muted">
+
+                                    Los platos presentan actualmente riesgo bajo.
+
+                                </small>
+
                             </td>
+
                         </tr>
 
                     @endforelse
@@ -471,99 +900,299 @@
 
 </div>
 
-{{-- Últimos cambios --}}
-<div class="card dashboard-card">
 
-    <div class="card-body p-4">
+{{-- ================================================================ --}}
+{{-- MÁS CONSUMIDOS + ACTIVIDAD RECIENTE --}}
+{{-- ================================================================ --}}
 
-        <div class="mb-4">
+<div class="row g-4">
 
-            <h5 class="fw-bold mb-1">
-                <i class="bi bi-clock-history text-primary me-2"></i>
-                Últimos cambios realizados
-            </h5>
 
-            <small class="text-muted">
-                Actividad reciente en la disponibilidad de productos.
-            </small>
+    {{-- MÁS CONSUMIDOS --}}
 
-        </div>
+    <div class="col-lg-5">
 
-    @forelse($ultimosCambios as $cambio)
+        <div class="card dashboard-card h-100">
 
-        <div class="timeline-item">
+            <div class="card-body p-4">
 
-            <span
-                class="timeline-dot
-                @if($cambio->estado_nuevo == 1)
-                    bg-success
-                @elseif($cambio->estado_nuevo == 2)
-                    bg-warning
-                @else
-                    bg-danger
-                @endif"
-            ></span>
+                <h5 class="fw-bold mb-1">
 
-            <div class="d-flex justify-content-between align-items-start">
+                    <i class="bi bi-trophy-fill text-warning me-2"></i>
 
-                <div>
-                    <strong>
-                        {{ $cambio->product->nombre ?? 'Producto eliminado' }}
-                    </strong>
+                    Platos más consumidos
 
-                    <div class="mt-1">
+                </h5>
 
-                        @if($cambio->estado_anterior == 1)
-                            <span class="badge bg-success">Disponible</span>
-                        @elseif($cambio->estado_anterior == 2)
-                            <span class="badge bg-warning text-dark">Bajo stock</span>
-                        @else
-                            <span class="badge bg-danger">Agotado</span>
-                        @endif
+                <small class="text-muted">
 
-                        <i class="bi bi-arrow-right mx-2"></i>
+                    Ranking de los últimos 7 días.
 
-                        @if($cambio->estado_nuevo == 1)
-                            <span class="badge bg-success">Disponible</span>
-                        @elseif($cambio->estado_nuevo == 2)
-                            <span class="badge bg-warning text-dark">Bajo stock</span>
-                        @else
-                            <span class="badge bg-danger">Agotado</span>
-                        @endif
+                </small>
+
+
+                @php
+
+                    $maxConsumo =
+                        $platosMasConsumidos->max(
+                            'total_consumido'
+                        ) ?: 1;
+
+                @endphp
+
+
+                <div class="mt-4">
+
+                    @forelse($platosMasConsumidos as $index => $item)
+
+                        <div class="mb-3">
+
+                            <div
+                                class="d-flex justify-content-between align-items-center mb-1"
+                            >
+
+                                <div>
+
+                                    <span class="text-muted me-2">
+
+                                        {{ $index + 1 }}.
+
+                                    </span>
+
+                                    <strong>
+
+                                        {{ $item->product?->nombre
+                                            ?? 'Producto eliminado' }}
+
+                                    </strong>
+
+                                </div>
+
+
+                                <span class="fw-bold">
+
+                                    {{ $item->total_consumido }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="progress progress-product">
+
+                                <div
+                                    class="progress-bar"
+                                    style="
+                                        width:
+                                        {{
+                                            round(
+                                                ($item->total_consumido
+                                                / $maxConsumo) * 100
+                                            )
+                                        }}%;
+                                    "
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+
+                    @empty
+
+                        <div class="text-center text-muted py-5">
+
+                            No existen consumos registrados.
+
+                        </div>
+
+                    @endforelse
+
+                </div>
+
+
+                @if(Auth::user()->esAdministrador() || Auth::user()->esCocina())
+
+                    <div class="text-end mt-3">
+
+                        <a
+                            href="{{ route('analisis-consumo.index') }}"
+                            class="text-decoration-none"
+                        >
+
+                            Ver todos
+
+                            <i class="bi bi-arrow-right"></i>
+
+                        </a>
 
                     </div>
 
-                    <small class="text-muted d-block mt-2">
-                        <i class="bi bi-person-circle me-1"></i>
-                        {{ $cambio->user->name ?? 'Usuario no disponible' }}
-                    </small>
-                </div>
-
-                <div class="text-end">
-                    <small class="text-muted d-block">
-                        {{ $cambio->created_at->diffForHumans() }}
-                    </small>
-
-                    <small class="text-muted">
-                        {{ $cambio->created_at->format('d/m/Y H:i') }}
-                    </small>
-                </div>
+                @endif
 
             </div>
 
         </div>
 
-    @empty
+    </div>
 
-        <div class="text-center text-muted py-4">
-            <i class="bi bi-clock-history fs-2"></i>
 
-            <p class="mt-2 mb-0">
-                No existen cambios registrados.
-            </p>
+    {{-- ACTIVIDAD RECIENTE --}}
+
+    <div class="col-lg-7">
+
+        <div class="card dashboard-card h-100">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h5 class="fw-bold mb-1">
+
+                            <i class="bi bi-clock-history text-primary me-2"></i>
+
+                            Actividad reciente
+
+                        </h5>
+
+                        <small class="text-muted">
+
+                            Últimos movimientos de disponibilidad y consumo.
+
+                        </small>
+
+                    </div>
+
+
+                    @if(Auth::user()->esAdministrador() || Auth::user()->esCocina())
+
+                        <a
+                            href="{{ route('historial.index') }}"
+                            class="btn btn-outline-secondary btn-sm"
+                        >
+                            Historial
+                        </a>
+
+                    @endif
+
+                </div>
+
+
+                <div class="mt-3">
+
+                    @forelse($actividadReciente as $actividad)
+
+                        <div class="activity-item">
+
+                            <div class="d-flex align-items-start gap-3">
+
+
+                                @if($actividad['tipo'] === 'consumo')
+
+                                    <div
+                                        class="activity-icon bg-success-subtle text-success"
+                                    >
+                                        <i class="bi bi-cart-check-fill"></i>
+                                    </div>
+
+                                @else
+
+                                    <div
+                                        class="activity-icon bg-warning-subtle text-warning"
+                                    >
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </div>
+
+                                @endif
+
+
+                                <div class="flex-grow-1">
+
+                                    <div
+                                        class="d-flex justify-content-between gap-3"
+                                    >
+
+                                        <div>
+
+                                            <strong>
+
+                                                {{ $actividad['producto'] }}
+
+                                            </strong>
+
+                                            <div class="small">
+
+                                                {{ $actividad['detalle'] }}
+
+                                            </div>
+
+
+                                            <small class="text-muted">
+
+                                                <i class="bi bi-person-circle me-1"></i>
+
+                                                {{ $actividad['usuario'] }}
+
+                                            </small>
+
+                                        </div>
+
+
+                                        <div class="text-end">
+
+                                            @if($actividad['tipo'] === 'consumo')
+
+                                                <span
+                                                    class="badge bg-success-subtle text-success"
+                                                >
+                                                    Consumo
+                                                </span>
+
+                                            @else
+
+                                                <span
+                                                    class="badge bg-warning-subtle text-warning-emphasis"
+                                                >
+                                                    Disponibilidad
+                                                </span>
+
+                                            @endif
+
+
+                                            <small class="text-muted d-block mt-1">
+
+                                                {{ $actividad['fecha']->diffForHumans() }}
+
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    @empty
+
+                        <div class="text-center text-muted py-5">
+
+                            No existen actividades recientes.
+
+                        </div>
+
+                    @endforelse
+
+                </div>
+
+            </div>
+
         </div>
-
-    @endforelse
 
     </div>
 
@@ -571,122 +1200,184 @@
 
 @endsection
 
+
 @push('scripts')
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.21/index.global.min.js"></script>
-
 <script>
+
 document.addEventListener('DOMContentLoaded', function () {
 
-    const grafico = document.getElementById('graficoDisponibilidad');
+    /*
+    |--------------------------------------------------------------------------
+    | GRÁFICO DE DISPONIBILIDAD
+    |--------------------------------------------------------------------------
+    */
 
-    if (grafico && typeof Chart !== 'undefined') {
+    const graficoDisponibilidad =
+        document.getElementById('graficoDisponibilidad');
 
-        new Chart(grafico, {
-            type: 'doughnut',
-
-            data: {
-                labels: [
-                    'Disponibles',
-                    'Bajo stock',
-                    'Agotados'
-                ],
-
-                datasets: [{
-                    data: [
-                        {{ $disponibles }},
-                        {{ $bajoStock }},
-                        {{ $agotados }}
-                    ],
-
-                    backgroundColor: [
-                        '#198754',
-                        '#ffc107',
-                        '#dc3545'
-                    ],
-
-                    borderColor: '#ffffff',
-                    borderWidth: 4,
-                    hoverOffset: 7
-                }]
-            },
-
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    }
-
-    const calendarioElemento = document.getElementById('calendario');
-    const fechaSeleccionada = document.getElementById('fechaSeleccionada');
 
     if (
-        calendarioElemento &&
-        typeof FullCalendar !== 'undefined'
+        graficoDisponibilidad &&
+        typeof Chart !== 'undefined'
     ) {
 
-        const calendario = new FullCalendar.Calendar(
-            calendarioElemento,
+        new Chart(
+            graficoDisponibilidad,
             {
-                locale: 'es',
-                initialView: 'dayGridMonth',
 
-                height: 285,
+                type: 'doughnut',
 
-                fixedWeekCount: false,
-                showNonCurrentDates: true,
+                data: {
 
-                headerToolbar: {
-                    left: 'prev,next',
-                    center: 'title',
-                    right: 'today'
+                    labels: [
+                        'Disponible',
+                        'Bajo stock',
+                        'Agotado'
+                    ],
+
+                    datasets: [{
+
+                        data: [
+                            {{ $disponibles }},
+                            {{ $bajoStock }},
+                            {{ $agotados }}
+                        ],
+
+                        backgroundColor: [
+                            '#198754',
+                            '#ffc107',
+                            '#dc3545'
+                        ],
+
+                        borderColor: '#ffffff',
+
+                        borderWidth: 4,
+
+                        hoverOffset: 7
+                    }]
                 },
 
-                buttonText: {
-                    today: 'Hoy'
-                },
+                options: {
 
-                dateClick: function(info) {
+                    responsive: true,
 
-                    const fecha = new Date(
-                        info.dateStr + 'T00:00:00'
-                    );
+                    maintainAspectRatio: false,
 
-                    const texto = fecha.toLocaleDateString(
-                        'es-PE',
-                        {
-                            weekday: 'long',
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
+                    cutout: '72%',
+
+                    plugins: {
+
+                        legend: {
+                            display: false
                         }
-                    );
 
-                    fechaSeleccionada.innerHTML =
-                        '<i class="bi bi-calendar-check me-2"></i>' +
-                        '<strong>' +
-                        texto.charAt(0).toUpperCase() +
-                        texto.slice(1) +
-                        '</strong>';
+                    }
 
-                    fechaSeleccionada.classList.remove('d-none');
                 }
+
             }
         );
 
-        calendario.render();
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | GRÁFICO DE CONSUMO
+    |--------------------------------------------------------------------------
+    */
+
+    const graficoConsumo =
+        document.getElementById('graficoConsumo');
+
+
+    if (
+        graficoConsumo &&
+        typeof Chart !== 'undefined'
+    ) {
+
+        new Chart(
+            graficoConsumo,
+            {
+
+                type: 'line',
+
+                data: {
+
+                    labels:
+                        @json($labelsConsumo),
+
+                    datasets: [{
+
+                        label: 'Unidades consumidas',
+
+                        data:
+                            @json($datosConsumo),
+
+                        borderColor:
+                            '#0d6efd',
+
+                        backgroundColor:
+                            'rgba(13, 110, 253, 0.08)',
+
+                        borderWidth: 3,
+
+                        tension: 0.35,
+
+                        fill: true,
+
+                        pointRadius: 5,
+
+                        pointHoverRadius: 7
+
+                    }]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+                                precision: 0
+                            }
+
+                        }
+
+                    },
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
 });
+
 </script>
 
 @endpush

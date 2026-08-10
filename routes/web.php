@@ -7,36 +7,43 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductConsumptionController;
+use App\Http\Controllers\ConsumptionAnalysisController;
+use App\Http\Controllers\StockoutRiskController;
+use App\Http\Controllers\ReplenishmentAlertController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
-
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
-
-use App\Http\Controllers\CategoryController;
 
 Route::middleware(['auth'])->group(function () {
 
-    // Todos los usuarios autenticados
+    /*
+    |--------------------------------------------------------------------------
+    | Todos los usuarios autenticados
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 
     Route::get(
         '/disponibilidad',
         [AvailabilityController::class, 'index']
     )->name('disponibilidad.index');
+
 
     /*
     |--------------------------------------------------------------------------
@@ -56,7 +63,31 @@ Route::middleware(['auth'])->group(function () {
             [HistoryController::class, 'index']
         )->name('historial.index');
 
+        // HU-08 - Registro de consumo
+        Route::get(
+            '/consumos',
+            [ProductConsumptionController::class, 'index']
+        )->name('consumos.index');
+
+        Route::post(
+            '/consumos',
+            [ProductConsumptionController::class, 'store']
+        )->name('consumos.store');
+        Route::get(
+            '/analisis-consumo',
+            [ConsumptionAnalysisController::class, 'index']
+        )->name('analisis-consumo.index');
+        Route::get(
+            '/riesgo-agotamiento',
+            [StockoutRiskController::class, 'index']
+        )->name('riesgo-agotamiento.index');
+        Route::get(
+            '/alertas-reposicion',
+            [ReplenishmentAlertController::class, 'index']
+        )->name('alertas-reposicion.index');
+
     });
+
 
     /*
     |--------------------------------------------------------------------------
@@ -90,3 +121,5 @@ Route::middleware(['auth'])->group(function () {
     });
 
 });
+
+require __DIR__.'/auth.php';

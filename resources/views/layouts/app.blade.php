@@ -29,21 +29,109 @@
             width: 250px;
             min-height: 100vh;
             background: #202529;
+
             position: fixed;
             top: 0;
             left: 0;
             bottom: 0;
+
             display: flex;
             flex-direction: column;
+
             overflow-y: auto;
+
             z-index: 1000;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
         }
 
         .main-content {
             margin-left: 250px;
             min-height: 100vh;
+
             width: calc(100% - 250px);
             min-width: 0;
+
+            transition:
+                margin-left 0.3s ease,
+                width 0.3s ease;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SIDEBAR OCULTA
+        |--------------------------------------------------------------------------
+        */
+
+        body.sidebar-collapsed .sidebar {
+            transform: translateX(-100%);
+        }
+
+        body.sidebar-collapsed .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN PARA ABRIR / CERRAR SIDEBAR
+        |--------------------------------------------------------------------------
+        */
+
+        .sidebar-toggle {
+            width: 42px;
+            height: 42px;
+
+            border: 0;
+            border-radius: 10px;
+
+            background: #6f4e37;
+            color: #ffffff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: #5c3f2d;
+            transform: scale(1.04);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN INTERNO PARA OCULTAR
+        |--------------------------------------------------------------------------
+        */
+
+        .sidebar-close {
+            width: 34px;
+            height: 34px;
+
+            border: 0;
+            border-radius: 8px;
+
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: background 0.2s ease;
+        }
+
+        .sidebar-close:hover {
+            background: rgba(255, 255, 255, 0.16);
         }
 
         .sidebar .nav-link {
@@ -118,31 +206,31 @@
         }
 
         @media (max-width: 991px) {
+
             .sidebar {
                 width: 250px;
-                position: fixed;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                min-height: 100vh;
+                box-shadow: 5px 0 18px rgba(0, 0, 0, 0.18);
             }
 
             .main-content {
-                margin-left: 250px;
-                width: calc(100% - 250px);
-                min-width: 0;
+                margin-left: 0;
+                width: 100%;
             }
 
-            .app-wrapper {
-                flex-direction: row;
+            body:not(.sidebar-collapsed) .sidebar {
+                transform: translateX(0);
             }
 
-            .main-content .container-fluid {
-                overflow-x: auto;
+            body.sidebar-collapsed .sidebar {
+                transform: translateX(-100%);
             }
 
             .system-title {
                 font-size: 15px;
+            }
+
+            .main-content .container-fluid {
+                overflow-x: auto;
             }
         }
     </style>
@@ -161,23 +249,37 @@
 
             <!-- Logo del sistema -->
 
-            <div class="d-flex align-items-center mb-4">
+            <div class="d<div class="d-flex align-items-center justify-content-between mb-4">
 
-                <div
-                    class="sidebar-logo rounded-circle d-flex align-items-center justify-content-center me-3"
+                <div class="d-flex align-items-center">
+
+                    <div
+                        class="sidebar-logo rounded-circle d-flex align-items-center justify-content-center me-3"
+                    >
+                        <i class="bi bi-cup-hot-fill"></i>
+                    </div>
+
+                    <div>
+                        <h4 class="text-white fw-bold mb-0">
+                            Café de Lima
+                        </h4>
+
+                        <small style="color: #bfc5ca;">
+                            Gestión de productos
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="sidebar-close"
+                    id="sidebarClose"
+                    title="Ocultar menú"
                 >
-                    <i class="bi bi-cup-hot-fill"></i>
-                </div>
-
-                <div>
-                    <h4 class="text-white fw-bold mb-0">
-                        Café de Lima
-                    </h4>
-
-                    <small style="color: #bfc5ca;">
-                        Gestión de productos
-                    </small>
-                </div>
+                    <i class="bi bi-chevron-left"></i>
+                </button>
 
             </div>
 
@@ -293,6 +395,34 @@
             @if(Auth::user()->esAdministrador() || Auth::user()->esCocina())
 
                 <a
+                    href="{{ route('consumos.index') }}"
+                    class="nav-link {{ request()->routeIs('consumos.*') ? 'active' : '' }}"
+                >
+                    <i class="bi bi-cart-check"></i>
+                    Consumos
+                </a>
+                <a
+                    href="{{ route('analisis-consumo.index') }}"
+                    class="nav-link {{ request()->routeIs('analisis-consumo.*') ? 'active' : '' }}"
+                >
+                    <i class="bi bi-graph-up-arrow"></i>
+                    Análisis de consumo
+                </a>
+                <a
+                    href="{{ route('riesgo-agotamiento.index') }}"
+                    class="nav-link {{ request()->routeIs('riesgo-agotamiento.*') ? 'active' : '' }}"
+                >
+                    <i class="bi bi-speedometer2"></i>
+                    Riesgo de agotamiento
+                </a>
+                <a
+                    href="{{ route('alertas-reposicion.index') }}"
+                    class="nav-link {{ request()->routeIs('alertas-reposicion.*') ? 'active' : '' }}"
+                >
+                    <i class="bi bi-bell-fill"></i>
+                    Alertas de reposición
+                </a>
+                <a
                     href="{{ route('historial.index') }}"
                     class="nav-link {{ request()->routeIs('historial.*') ? 'active' : '' }}"
                 >
@@ -354,13 +484,29 @@
 
         <nav class="navbar navbar-light bg-white shadow-sm top-navbar">
 
-            <div class="container-fluid px-4">
+        <div class="container-fluid px-4">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <button
+                    type="button"
+                    class="sidebar-toggle"
+                    id="sidebarToggle"
+                    title="Mostrar u ocultar menú"
+                >
+                    <i class="bi bi-list"></i>
+                </button>
+
 
                 <span class="navbar-brand system-title mb-0">
+
                     Sistema de Gestión de Disponibilidad Restaurante Café de Lima
+
                 </span>
 
             </div>
+
+        </div>
 
         </nav>
 
@@ -456,11 +602,106 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
 
-@stack('scripts')
+    const body = document.body;
 
-</body>
-</html>
+    const sidebarToggle =
+        document.getElementById('sidebarToggle');
+
+    const sidebarClose =
+        document.getElementById('sidebarClose');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RECUPERAR ESTADO DEL SIDEBAR
+    |--------------------------------------------------------------------------
+    */
+
+    const sidebarGuardado =
+        localStorage.getItem('cafeLimaSidebar');
+
+
+    if (sidebarGuardado === 'collapsed') {
+
+        body.classList.add('sidebar-collapsed');
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MOSTRAR / OCULTAR DESDE NAVBAR
+    |--------------------------------------------------------------------------
+    */
+
+    if (sidebarToggle) {
+
+        sidebarToggle.addEventListener(
+            'click',
+            function () {
+
+                body.classList.toggle(
+                    'sidebar-collapsed'
+                );
+
+
+                if (
+                    body.classList.contains(
+                        'sidebar-collapsed'
+                    )
+                ) {
+
+                    localStorage.setItem(
+                        'cafeLimaSidebar',
+                        'collapsed'
+                    );
+
+                } else {
+
+                    localStorage.setItem(
+                        'cafeLimaSidebar',
+                        'expanded'
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | OCULTAR DESDE SIDEBAR
+    |--------------------------------------------------------------------------
+    */
+
+    if (sidebarClose) {
+
+        sidebarClose.addEventListener(
+            'click',
+            function () {
+
+                body.classList.add(
+                    'sidebar-collapsed'
+                );
+
+                localStorage.setItem(
+                    'cafeLimaSidebar',
+                    'collapsed'
+                );
+
+            }
+        );
+
+    }
+
+});
+</script>
 
 @stack('scripts')
 
