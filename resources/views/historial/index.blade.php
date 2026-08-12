@@ -17,9 +17,69 @@
         gap: 8px;
         flex-wrap: wrap;
     }
+
+    .history-mobile-item {
+        padding: 16px;
+        border-bottom: 1px solid #eceff2;
+    }
+
+    .history-mobile-item:last-child {
+        border-bottom: 0;
+    }
+
+    .history-mobile-title {
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .history-mobile-meta {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .history-detail-box {
+        background: #f8f9fa;
+        border: 1px solid #eceff2;
+        border-radius: 10px;
+        padding: 10px 12px;
+    }
+
+    @media (max-width: 767.98px) {
+
+        .history-header {
+            margin-bottom: 20px !important;
+        }
+
+        .history-header h2 {
+            font-size: 1.55rem;
+        }
+
+        .history-header p {
+            font-size: 0.95rem;
+        }
+
+        .history-filter-card .card-body {
+            padding: 1rem;
+        }
+
+        .history-filter-actions {
+            display: grid !important;
+            grid-template-columns: 1fr auto;
+            gap: 8px !important;
+        }
+
+        .history-filter-actions .btn-primary {
+            width: 100%;
+        }
+
+        .history-card {
+            overflow: hidden;
+        }
+    }
 </style>
 
-<div class="mb-4">
+<div class="mb-4 history-header">
     <h2 class="fw-bold mb-1">
         Historial de disponibilidad y consumo
     </h2>
@@ -30,7 +90,7 @@
 </div>
 
 
-<div class="card history-card mb-4">
+<div class="card history-card history-filter-card mb-4">
 
     <div class="card-body">
 
@@ -43,7 +103,7 @@
 
                 {{-- PRODUCTO --}}
 
-                <div class="col-md-3">
+                <div class="col-12 col-md-3">
 
                     <label class="form-label">
                         Buscar plato
@@ -62,7 +122,7 @@
 
                 {{-- TIPO DE MOVIMIENTO --}}
 
-                <div class="col-md-2">
+                <div class="col-12 col-sm-6 col-md-2">
 
                     <label class="form-label">
                         Tipo
@@ -98,7 +158,7 @@
 
                 {{-- ESTADO --}}
 
-                <div class="col-md-2">
+                <div class="col-12 col-sm-6 col-md-2">
 
                     <label class="form-label">
                         Estado
@@ -141,7 +201,7 @@
 
                 {{-- FECHA --}}
 
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
 
                     <label class="form-label">
                         Fecha
@@ -159,13 +219,13 @@
 
                 {{-- BOTONES --}}
 
-                <div class="col-md-2 d-flex gap-2">
+                <div class="col-12 col-sm-6 col-md-2 d-flex gap-2 history-filter-actions">
 
                     <button
                         type="submit"
                         class="btn btn-primary"
                     >
-                        <i class="bi bi-search"></i>
+                        <i class="bi bi-search me-1"></i>
                         Buscar
                     </button>
 
@@ -173,6 +233,7 @@
                         href="{{ route('historial.index') }}"
                         class="btn btn-secondary"
                         title="Limpiar filtros"
+                        aria-label="Limpiar filtros"
                     >
                         <i class="bi bi-arrow-clockwise"></i>
                     </a>
@@ -190,7 +251,11 @@
 
 <div class="card history-card">
 
-    <div class="card-body p-0">
+    {{-- ============================================================ --}}
+    {{-- TABLET / PC --}}
+    {{-- ============================================================ --}}
+
+    <div class="card-body p-0 d-none d-md-block">
 
         <div class="table-responsive">
 
@@ -216,8 +281,6 @@
 
                         <tr>
 
-                            {{-- FECHA --}}
-
                             <td class="ps-4">
 
                                 <div class="fw-semibold">
@@ -231,21 +294,15 @@
                             </td>
 
 
-                            {{-- PRODUCTO --}}
-
                             <td class="fw-semibold">
                                 {{ $historial['producto'] }}
                             </td>
 
 
-                            {{-- CATEGORÍA --}}
-
                             <td>
                                 {{ $historial['categoria'] }}
                             </td>
 
-
-                            {{-- TIPO --}}
 
                             <td>
 
@@ -268,8 +325,6 @@
                             </td>
 
 
-                            {{-- DETALLE --}}
-
                             <td>
 
                                 @if($historial['tipo'] === 'consumo')
@@ -283,8 +338,6 @@
                                 @else
 
                                     <div class="state-change">
-
-                                        {{-- ESTADO ANTERIOR --}}
 
                                         @if($historial['estado_anterior'] == 1)
 
@@ -316,8 +369,6 @@
                                         <i class="bi bi-arrow-right"></i>
 
 
-                                        {{-- ESTADO NUEVO --}}
-
                                         @if($historial['estado_nuevo'] == 1)
 
                                             <span class="badge bg-success">
@@ -345,8 +396,6 @@
                             </td>
 
 
-                            {{-- USUARIO --}}
-
                             <td>
 
                                 <i class="bi bi-person-circle me-1"></i>
@@ -355,8 +404,6 @@
 
                             </td>
 
-
-                            {{-- OBSERVACIÓN --}}
 
                             <td>
 
@@ -400,16 +447,175 @@
 
         </div>
 
+    </div>
 
-        @if($historiales->hasPages())
 
-            <div class="p-3">
-                {{ $historiales->links() }}
+    {{-- ============================================================ --}}
+    {{-- MÓVIL --}}
+    {{-- ============================================================ --}}
+
+    <div class="d-md-none">
+
+        @forelse($historiales as $historial)
+
+            <div class="history-mobile-item">
+
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+
+                    <div>
+
+                        <div class="history-mobile-title">
+                            {{ $historial['producto'] }}
+                        </div>
+
+                        <div class="history-mobile-meta mt-1">
+                            <i class="bi bi-tag me-1"></i>
+                            {{ $historial['categoria'] }}
+                        </div>
+
+                    </div>
+
+                    <div class="text-end">
+
+                        @if($historial['tipo'] === 'consumo')
+
+                            <span class="badge bg-primary">
+                                <i class="bi bi-cart-check me-1"></i>
+                                Consumo
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-secondary">
+                                <i class="bi bi-arrow-repeat me-1"></i>
+                                Disponibilidad
+                            </span>
+
+                        @endif
+
+                    </div>
+
+                </div>
+
+
+                <div class="history-mobile-meta mb-2">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{ $historial['fecha']->format('d/m/Y H:i') }}
+                </div>
+
+
+                <div class="history-detail-box mb-2">
+
+                    @if($historial['tipo'] === 'consumo')
+
+                        <div class="fw-semibold">
+                            {{ $historial['cantidad'] }}
+                            unidad(es) consumida(s)
+                        </div>
+
+                    @else
+
+                        <div class="state-change">
+
+                            @if($historial['estado_anterior'] == 1)
+
+                                <span class="badge bg-success">
+                                    Disponible
+                                </span>
+
+                            @elseif($historial['estado_anterior'] == 2)
+
+                                <span class="badge bg-warning text-dark">
+                                    Bajo stock
+                                </span>
+
+                            @elseif($historial['estado_anterior'] == 3)
+
+                                <span class="badge bg-danger">
+                                    Agotado
+                                </span>
+
+                            @else
+
+                                <span class="badge bg-secondary">
+                                    Sin estado
+                                </span>
+
+                            @endif
+
+
+                            <i class="bi bi-arrow-right"></i>
+
+
+                            @if($historial['estado_nuevo'] == 1)
+
+                                <span class="badge bg-success">
+                                    Disponible
+                                </span>
+
+                            @elseif($historial['estado_nuevo'] == 2)
+
+                                <span class="badge bg-warning text-dark">
+                                    Bajo stock
+                                </span>
+
+                            @elseif($historial['estado_nuevo'] == 3)
+
+                                <span class="badge bg-danger">
+                                    Agotado
+                                </span>
+
+                            @endif
+
+                        </div>
+
+                    @endif
+
+                </div>
+
+
+                <div class="history-mobile-meta mb-1">
+                    <i class="bi bi-person-circle me-1"></i>
+                    {{ $historial['usuario'] }}
+                </div>
+
+                <div class="history-mobile-meta">
+                    <i class="bi bi-chat-left-text me-1"></i>
+                    {{ $historial['observacion'] ?: 'Sin observación' }}
+                </div>
+
             </div>
 
-        @endif
+        @empty
+
+            <div class="text-center py-5 px-3">
+
+                <i
+                    class="bi bi-clock-history fs-1 text-muted"
+                ></i>
+
+                <h6 class="fw-bold mt-3">
+                    No existen movimientos registrados
+                </h6>
+
+                <p class="text-muted mb-0">
+                    Los cambios de disponibilidad y consumos aparecerán aquí.
+                </p>
+
+            </div>
+
+        @endforelse
 
     </div>
+
+
+    @if($historiales->hasPages())
+
+        <div class="p-3 border-top">
+            {{ $historiales->links() }}
+        </div>
+
+    @endif
 
 </div>
 

@@ -31,8 +31,9 @@
 
     .chart-container {
         position: relative;
-        width: 220px;
-        height: 220px;
+        width: min(220px, 100%);
+        aspect-ratio: 1 / 1;
+        height: auto;
         margin: auto;
     }
 
@@ -99,12 +100,177 @@
         flex-shrink: 0;
     }
 
+    .dashboard-header {
+        gap: 16px;
+    }
+
+    .dashboard-last-update {
+        min-width: 150px;
+    }
+
+    .section-heading {
+        gap: 14px;
+    }
+
+    .section-action {
+        flex-shrink: 0;
+    }
+
+    .dashboard-card,
+    .metric-card {
+        overflow: hidden;
+    }
+
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 767.98px) {
+
+        .dashboard-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            margin-bottom: 20px !important;
+        }
+
+        .dashboard-last-update {
+            min-width: 0;
+            text-align: left !important;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .section-heading {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        .section-action {
+            width: 100%;
+        }
+
+        .section-action .btn,
+        .section-heading > .btn {
+            width: 100%;
+        }
+
+        .consumption-chart {
+            height: 240px;
+        }
+
+        .dashboard-card .card-body {
+            padding: 1rem !important;
+        }
+
+        .metric-card .card-body {
+            padding: 1rem;
+        }
+
+        .metric-icon {
+            width: 46px;
+            height: 46px;
+            font-size: 20px;
+        }
+
+        .chart-container {
+            width: min(200px, 72vw);
+        }
+
+        .availability-stats small {
+            font-size: 11px;
+        }
+
+        .activity-meta {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 8px !important;
+        }
+
+        .activity-status {
+            text-align: left !important;
+        }
+
+        .activity-status small {
+            margin-top: 4px !important;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+
+        .dashboard-header h2 {
+            font-size: 1.55rem;
+        }
+
+        .dashboard-header p {
+            font-size: 0.95rem;
+        }
+
+        .metric-card h3 {
+            font-size: 1.55rem;
+        }
+
+        .chart-center strong {
+            font-size: 26px;
+        }
+
+        .availability-stats {
+            row-gap: 14px;
+        }
+
+        .availability-stats > div {
+            border: 0 !important;
+        }
+
+        .availability-stats > div:not(:last-child) {
+            border-bottom: 1px solid #e9ecef !important;
+            padding-bottom: 10px;
+        }
+
+        .availability-stats .col-4 {
+            width: 100%;
+        }
+
+        .top-risk-table th:nth-child(2),
+        .top-risk-table td:nth-child(2) {
+            display: none;
+        }
+
+        .alerts-table th:nth-child(2),
+        .alerts-table td:nth-child(2),
+        .alerts-table th:nth-child(4),
+        .alerts-table td:nth-child(4) {
+            display: none;
+        }
+
+        .alerts-table td:last-child {
+            min-width: 220px;
+            white-space: normal;
+        }
+
+        .activity-item .d-flex.align-items-start.gap-3 {
+            gap: 10px !important;
+        }
+
+        .activity-icon {
+            width: 34px;
+            height: 34px;
+        }
+
+        .ranking-row {
+            gap: 8px;
+        }
+
+        .ranking-row strong {
+            word-break: break-word;
+        }
+    }
+
 </style>
 
 
 {{-- CABECERA --}}
 
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 dashboard-header">
 
     <div>
 
@@ -119,7 +285,7 @@
     </div>
 
 
-    <div class="text-end">
+    <div class="text-end dashboard-last-update">
 
         <small class="text-muted d-block">
             Última actualización
@@ -155,7 +321,7 @@
 
     {{-- CONSUMO HOY --}}
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card metric-card h-100">
 
@@ -196,7 +362,7 @@
 
     {{-- CONSUMO 7 DÍAS --}}
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card metric-card h-100">
 
@@ -237,7 +403,7 @@
 
     {{-- RIESGO ALTO --}}
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card metric-card h-100">
 
@@ -278,7 +444,7 @@
 
     {{-- RIESGO CRÍTICO --}}
 
-    <div class="col-xl-3 col-md-6">
+    <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card metric-card h-100">
 
@@ -384,7 +550,7 @@
                     </div>
 
 
-                    <div class="row text-center mt-4">
+                    <div class="row text-center mt-4 availability-stats">
 
                         <div class="col-4">
 
@@ -479,7 +645,7 @@
 
             <div class="card-body p-4">
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-3 section-heading">
 
                     <div>
 
@@ -504,7 +670,7 @@
 
                         <a
                             href="{{ route('riesgo-agotamiento.index') }}"
-                            class="btn btn-outline-primary btn-sm"
+                            class="btn btn-outline-primary btn-sm section-action"
                         >
                             Ver análisis
                         </a>
@@ -516,7 +682,7 @@
 
                 <div class="table-responsive">
 
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle top-risk-table">
 
                         <thead class="table-light">
 
@@ -665,7 +831,7 @@
 
     <div class="card-body p-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 section-heading">
 
             <div>
 
@@ -690,7 +856,7 @@
 
                 <a
                     href="{{ route('analisis-consumo.index') }}"
-                    class="btn btn-outline-primary btn-sm"
+                    class="btn btn-outline-primary btn-sm section-action"
                 >
                     Ver análisis completo
                 </a>
@@ -719,7 +885,7 @@
 
     <div class="card-body p-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 section-heading">
 
             <div>
 
@@ -744,7 +910,7 @@
 
                 <a
                     href="{{ route('alertas-reposicion.index') }}"
-                    class="btn btn-outline-primary btn-sm"
+                    class="btn btn-outline-primary btn-sm section-action"
                 >
                     Ver todas
                 </a>
@@ -756,7 +922,7 @@
 
         <div class="table-responsive">
 
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 alerts-table">
 
                 <thead class="table-light">
 
@@ -948,7 +1114,7 @@
                         <div class="mb-3">
 
                             <div
-                                class="d-flex justify-content-between align-items-center mb-1"
+                                class="d-flex justify-content-between align-items-center mb-1 ranking-row"
                             >
 
                                 <div>
@@ -1045,7 +1211,7 @@
 
             <div class="card-body p-4">
 
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center section-heading">
 
                     <div>
 
@@ -1070,7 +1236,7 @@
 
                         <a
                             href="{{ route('historial.index') }}"
-                            class="btn btn-outline-secondary btn-sm"
+                            class="btn btn-outline-secondary btn-sm section-action"
                         >
                             Historial
                         </a>
@@ -1111,7 +1277,7 @@
                                 <div class="flex-grow-1">
 
                                     <div
-                                        class="d-flex justify-content-between gap-3"
+                                        class="d-flex justify-content-between gap-3 activity-meta"
                                     >
 
                                         <div>
@@ -1140,7 +1306,7 @@
                                         </div>
 
 
-                                        <div class="text-end">
+                                        <div class="text-end activity-status">
 
                                             @if($actividad['tipo'] === 'consumo')
 

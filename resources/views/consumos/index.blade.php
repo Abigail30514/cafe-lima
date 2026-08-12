@@ -4,7 +4,64 @@
 
 @section('content')
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<style>
+    .consumption-card {
+        border: 0;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+    }
+
+    .consumption-mobile-item {
+        padding: 16px;
+        border-bottom: 1px solid #eceff2;
+    }
+
+    .consumption-mobile-item:last-child {
+        border-bottom: 0;
+    }
+
+    .consumption-mobile-title {
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .consumption-mobile-meta {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    @media (max-width: 767.98px) {
+
+        .consumption-header {
+            margin-bottom: 20px !important;
+        }
+
+        .consumption-header h2 {
+            font-size: 1.55rem;
+        }
+
+        .consumption-header p {
+            font-size: 0.95rem;
+        }
+
+        .consumption-card .card-body {
+            padding: 1rem;
+        }
+
+        .consumption-submit {
+            width: 100%;
+        }
+
+        .consumption-list-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 8px;
+        }
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 consumption-header">
     <div>
         <h2 class="fw-bold mb-1">Registro de Consumos</h2>
         <p class="text-muted mb-0">
@@ -26,7 +83,7 @@
 @endif
 
 
-<div class="card shadow-sm border-0 mb-4">
+<div class="card consumption-card mb-4">
 
     <div class="card-header bg-white py-3">
         <h5 class="mb-0 fw-semibold">
@@ -42,7 +99,7 @@
 
             <div class="row g-3">
 
-                <div class="col-md-5">
+                <div class="col-12 col-md-5">
 
                     <label class="form-label fw-semibold">
                         Plato
@@ -75,7 +132,7 @@
                 </div>
 
 
-                <div class="col-md-2">
+                <div class="col-12 col-sm-4 col-md-2">
 
                     <label class="form-label fw-semibold">
                         Cantidad
@@ -93,7 +150,7 @@
                 </div>
 
 
-                <div class="col-md-3">
+                <div class="col-12 col-sm-4 col-md-3">
 
                     <label class="form-label fw-semibold">
                         Fecha
@@ -109,7 +166,7 @@
 
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-12 col-sm-4 col-md-2">
 
                     <label class="form-label fw-semibold">
                         Hora
@@ -147,7 +204,7 @@
 
                     <button
                         type="submit"
-                        class="btn btn-primary px-4"
+                        class="btn btn-primary px-4 consumption-submit"
                     >
                         <i class="bi bi-check-circle me-2"></i>
                         Registrar consumo
@@ -163,11 +220,11 @@
 </div>
 
 
-<div class="card shadow-sm border-0">
+<div class="card consumption-card">
 
     <div class="card-header bg-white py-3">
 
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center consumption-list-header">
 
             <h5 class="mb-0 fw-semibold">
                 <i class="bi bi-clock-history me-2"></i>
@@ -183,7 +240,11 @@
     </div>
 
 
-    <div class="card-body p-0">
+    {{-- ============================================================ --}}
+    {{-- TABLET / PC --}}
+    {{-- ============================================================ --}}
+
+    <div class="card-body p-0 d-none d-md-block">
 
         <div class="table-responsive">
 
@@ -262,6 +323,67 @@
         </div>
 
     </div>
+
+
+    {{-- ============================================================ --}}
+    {{-- MÓVIL --}}
+    {{-- ============================================================ --}}
+
+    <div class="d-md-none">
+
+        @forelse($consumptions as $consumption)
+
+            <div class="consumption-mobile-item">
+
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+
+                    <div class="min-w-0">
+
+                        <div class="consumption-mobile-title">
+                            {{ $consumption->product->nombre }}
+                        </div>
+
+                        <div class="consumption-mobile-meta mt-1">
+                            <i class="bi bi-tag me-1"></i>
+                            {{ $consumption->product->category->nombre ?? 'Sin categoría' }}
+                        </div>
+
+                    </div>
+
+                    <span class="badge bg-primary rounded-pill fs-6">
+                        {{ $consumption->quantity }}
+                    </span>
+
+                </div>
+
+                <div class="consumption-mobile-meta mb-1">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{ $consumption->consumed_at->format('d/m/Y H:i') }}
+                </div>
+
+                <div class="consumption-mobile-meta mb-1">
+                    <i class="bi bi-person-circle me-1"></i>
+                    {{ $consumption->user?->name ?? 'Usuario eliminado' }}
+                </div>
+
+                <div class="consumption-mobile-meta">
+                    <i class="bi bi-chat-left-text me-1"></i>
+                    {{ $consumption->observation ?: 'Sin observación' }}
+                </div>
+
+            </div>
+
+        @empty
+
+            <div class="text-center text-muted py-5 px-3">
+                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                Aún no existen consumos registrados.
+            </div>
+
+        @endforelse
+
+    </div>
+
 
     @if($consumptions->hasPages())
 

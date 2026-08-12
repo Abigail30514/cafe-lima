@@ -19,16 +19,93 @@
         align-items: center;
         justify-content: center;
         font-size: 21px;
+        flex-shrink: 0;
     }
 
     .chart-box {
         position: relative;
         height: 320px;
     }
+
+    .analysis-mobile-item {
+        padding: 16px;
+        border-bottom: 1px solid #eceff2;
+    }
+
+    .analysis-mobile-item:last-child {
+        border-bottom: 0;
+    }
+
+    .analysis-mobile-title {
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .analysis-mobile-meta {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    @media (max-width: 767.98px) {
+
+        .analysis-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 16px;
+            margin-bottom: 20px !important;
+        }
+
+        .analysis-header h2 {
+            font-size: 1.55rem;
+        }
+
+        .analysis-header p {
+            font-size: 0.95rem;
+        }
+
+        .analysis-period-form {
+            width: 100%;
+            align-items: stretch !important;
+        }
+
+        .analysis-period-form label {
+            margin-bottom: 4px;
+        }
+
+        .analysis-period-form .form-select {
+            width: 100%;
+        }
+
+        .analysis-card .card-body {
+            padding: 1rem !important;
+        }
+
+        .chart-box {
+            height: 240px;
+        }
+
+        .metric-icon {
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+
+        .chart-box {
+            height: 220px;
+        }
+
+        .analysis-mobile-item .badge {
+            font-size: 0.8rem;
+        }
+    }
 </style>
 
 
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 analysis-header">
 
     <div>
         <h2 class="fw-bold mb-1">
@@ -44,7 +121,7 @@
     <form
         method="GET"
         action="{{ route('analisis-consumo.index') }}"
-        class="d-flex align-items-center gap-2"
+        class="d-flex align-items-center gap-2 analysis-period-form"
     >
 
         <label class="text-muted">
@@ -87,9 +164,9 @@
 
 {{-- INDICADORES --}}
 
-<div class="row g-4 mb-4">
+<div class="row g-3 g-md-4 mb-4">
 
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card analysis-card h-100">
 
@@ -124,7 +201,7 @@
     </div>
 
 
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card analysis-card h-100">
 
@@ -159,7 +236,7 @@
     </div>
 
 
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card analysis-card h-100">
 
@@ -194,7 +271,7 @@
     </div>
 
 
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card analysis-card h-100">
 
@@ -345,7 +422,9 @@
         </div>
 
 
-        <div class="table-responsive">
+        {{-- TABLET / PC --}}
+
+        <div class="table-responsive d-none d-md-block">
 
             <table class="table table-hover align-middle mb-0">
 
@@ -445,6 +524,78 @@
 
         </div>
 
+
+        {{-- MÓVIL --}}
+
+        <div class="d-md-none">
+
+            @forelse(
+                $productosMasConsumidos as $index => $item
+            )
+
+                <div class="analysis-mobile-item">
+
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+
+                        <div>
+
+                            <div class="analysis-mobile-title">
+                                {{ $index + 1 }}.
+                                {{ $item->product?->nombre
+                                    ?? 'Producto eliminado' }}
+                            </div>
+
+                            <div class="analysis-mobile-meta mt-1">
+                                <i class="bi bi-tag me-1"></i>
+                                {{ $item->product?->category?->nombre
+                                    ?? 'Sin categoría' }}
+                            </div>
+
+                        </div>
+
+                        <span class="badge bg-primary rounded-pill">
+                            {{ $item->total_consumido }}
+                        </span>
+
+                    </div>
+
+                    <div class="row g-2 mt-1">
+
+                        <div class="col-6">
+                            <div class="analysis-mobile-meta">
+                                Registros
+                            </div>
+                            <div class="fw-semibold">
+                                {{ $item->total_registros }}
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="analysis-mobile-meta">
+                                Promedio diario
+                            </div>
+                            <div class="fw-semibold">
+                                {{ number_format(
+                                    $item->total_consumido / $dias,
+                                    1
+                                ) }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            @empty
+
+                <div class="text-center py-5 text-muted">
+                    No existen datos de consumo para analizar.
+                </div>
+
+            @endforelse
+
+        </div>
+
     </div>
 
 </div>
@@ -499,6 +650,11 @@ document.addEventListener('DOMContentLoaded', function () {
             responsive: true,
 
             maintainAspectRatio: false,
+
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
 
             scales: {
 

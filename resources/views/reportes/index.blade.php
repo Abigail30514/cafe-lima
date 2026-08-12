@@ -31,6 +31,95 @@
         flex-shrink: 0;
     }
 
+    .report-mobile-item {
+        padding: 16px;
+        border-bottom: 1px solid #eceff2;
+    }
+
+    .report-mobile-item:last-child {
+        border-bottom: 0;
+    }
+
+    .report-mobile-title {
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .report-mobile-meta {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .report-mobile-box {
+        background: #f8f9fa;
+        border: 1px solid #eceff2;
+        border-radius: 10px;
+        padding: 10px 12px;
+    }
+
+    @media (max-width: 767.98px) {
+
+        .report-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 16px;
+            margin-bottom: 20px !important;
+        }
+
+        .report-header h2 {
+            font-size: 1.55rem;
+        }
+
+        .report-header p {
+            font-size: 0.95rem;
+        }
+
+        .report-export-actions {
+            width: 100%;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px !important;
+        }
+
+        .report-export-actions .btn {
+            width: 100%;
+        }
+
+        .report-filter-card .card-body {
+            padding: 1rem;
+        }
+
+        .report-filter-actions {
+            display: grid !important;
+            grid-template-columns: 1fr auto;
+            gap: 8px !important;
+        }
+
+        .report-filter-actions .btn-primary {
+            width: 100%;
+        }
+
+        .report-period {
+            align-items: flex-start !important;
+            line-height: 1.45;
+        }
+
+        .report-list-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 8px;
+        }
+
+        .report-card {
+            overflow: hidden;
+        }
+
+        .summary-card .card-body {
+            padding: 1rem;
+        }
+    }
+
 </style>
 
 
@@ -60,7 +149,7 @@
 
 {{-- CABECERA --}}
 
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex justify-content-between align-items-start mb-4 report-header">
 
     <div>
 
@@ -75,7 +164,7 @@
     </div>
 
 
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 report-export-actions">
 
         <a
             href="{{
@@ -117,7 +206,7 @@
 
 {{-- FILTROS --}}
 
-<div class="card report-card mb-4">
+<div class="card report-card report-filter-card mb-4">
 
     <div class="card-body">
 
@@ -131,7 +220,7 @@
 
                 {{-- CATEGORÍA --}}
 
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
 
                     <label class="form-label">
                         Categoría
@@ -169,7 +258,7 @@
 
                 {{-- ESTADO --}}
 
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
 
                     <label class="form-label">
                         Estado actual
@@ -218,7 +307,7 @@
 
                 {{-- DESDE --}}
 
-                <div class="col-md-2">
+                <div class="col-12 col-sm-6 col-md-2">
 
                     <label class="form-label">
                         Desde
@@ -237,7 +326,7 @@
 
                 {{-- HASTA --}}
 
-                <div class="col-md-2">
+                <div class="col-12 col-sm-6 col-md-2">
 
                     <label class="form-label">
                         Hasta
@@ -256,14 +345,14 @@
 
                 {{-- BOTONES --}}
 
-                <div class="col-md-2 d-flex gap-2">
+                <div class="col-12 col-md-2 d-flex gap-2 report-filter-actions">
 
                     <button
                         type="submit"
                         class="btn btn-primary"
                     >
 
-                        <i class="bi bi-funnel"></i>
+                        <i class="bi bi-funnel me-1"></i>
 
                         Filtrar
 
@@ -274,6 +363,7 @@
                         href="{{ route('reportes.index') }}"
                         class="btn btn-secondary"
                         title="Restablecer filtros"
+                        aria-label="Restablecer filtros"
                     >
 
                         <i class="bi bi-arrow-clockwise"></i>
@@ -293,17 +383,21 @@
 
 {{-- PERIODO --}}
 
-<div class="alert alert-light border mb-4">
+<div class="alert alert-light border mb-4 d-flex gap-2 report-period">
 
-    <i class="bi bi-calendar-range text-primary me-2"></i>
+    <i class="bi bi-calendar-range text-primary mt-1"></i>
 
-    <strong>Periodo analizado:</strong>
+    <div>
 
-    {{ \Carbon\Carbon::parse($fechaInicio)->format('d/m/Y') }}
+        <strong>Periodo analizado:</strong>
 
-    al
+        {{ \Carbon\Carbon::parse($fechaInicio)->format('d/m/Y') }}
 
-    {{ \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') }}
+        al
+
+        {{ \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') }}
+
+    </div>
 
 </div>
 
@@ -315,7 +409,7 @@
 
     {{-- PRODUCTOS --}}
 
-    <div class="col-md-6 col-xl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
 
         <div class="card summary-card shadow-sm h-100">
 
@@ -348,7 +442,7 @@
 
     {{-- CONSUMO TOTAL --}}
 
-    <div class="col-md-6 col-xl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
 
         <div class="card summary-card shadow-sm h-100">
 
@@ -387,7 +481,7 @@
 
     {{-- DISPONIBLES --}}
 
-    <div class="col-md-6 col-xl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
 
         <div class="card summary-card shadow-sm h-100">
 
@@ -422,7 +516,7 @@
 
     {{-- BAJO STOCK --}}
 
-    <div class="col-md-6 col-xl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
 
         <div class="card summary-card shadow-sm h-100">
 
@@ -457,7 +551,7 @@
 
     {{-- AGOTADOS --}}
 
-    <div class="col-md-6 col-xl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
 
         <div class="card summary-card shadow-sm h-100">
 
@@ -492,7 +586,7 @@
 
     {{-- RIESGO --}}
 
-    <div class="col-md-6 col-xl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
 
         <div class="card summary-card shadow-sm h-100">
 
@@ -533,7 +627,7 @@
 
     <div class="card-header bg-white border-0 py-3">
 
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center report-list-header">
 
             <div>
 
@@ -561,7 +655,11 @@
     </div>
 
 
-    <div class="card-body p-0">
+    {{-- ============================================================ --}}
+    {{-- TABLET / PC --}}
+    {{-- ============================================================ --}}
+
+    <div class="card-body p-0 d-none d-md-block">
 
         <div class="table-responsive">
 
@@ -764,6 +862,172 @@
             </table>
 
         </div>
+
+    </div>
+
+
+    {{-- ============================================================ --}}
+    {{-- MÓVIL --}}
+    {{-- ============================================================ --}}
+
+    <div class="d-md-none">
+
+        @forelse($reportes as $item)
+
+            @php
+                $producto = $item['producto'];
+            @endphp
+
+            <div class="report-mobile-item">
+
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+
+                    <div>
+
+                        <div class="report-mobile-title">
+                            {{ $producto->nombre }}
+                        </div>
+
+                        <div class="report-mobile-meta mt-1">
+                            <i class="bi bi-tag me-1"></i>
+                            {{ $producto->category?->nombre ?? 'Sin categoría' }}
+                        </div>
+
+                    </div>
+
+                    <div class="text-end">
+
+                        @if($item['riesgo'] === 'Critico')
+
+                            <span class="badge bg-danger">
+                                Crítico
+                            </span>
+
+                        @elseif($item['riesgo'] === 'Alto')
+
+                            <span
+                                class="badge"
+                                style="background:#fd7e14;"
+                            >
+                                Alto
+                            </span>
+
+                        @elseif($item['riesgo'] === 'Medio')
+
+                            <span class="badge bg-warning text-dark">
+                                Medio
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-success">
+                                Bajo
+                            </span>
+
+                        @endif
+
+                        <div class="small text-muted mt-1">
+                            {{ $item['puntaje'] }}/100
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    @if($producto->estado == 1)
+
+                        <span class="badge bg-success">
+                            Disponible
+                        </span>
+
+                    @elseif($producto->estado == 2)
+
+                        <span class="badge bg-warning text-dark">
+                            Bajo stock
+                        </span>
+
+                    @else
+
+                        <span class="badge bg-danger">
+                            Agotado
+                        </span>
+
+                    @endif
+
+                </div>
+
+
+                <div class="row g-3 mb-3">
+
+                    <div class="col-6">
+
+                        <div class="report-mobile-meta">
+                            Consumo periodo
+                        </div>
+
+                        <div class="fw-bold">
+                            {{ $item['consumo_periodo'] }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-6">
+
+                        <div class="report-mobile-meta">
+                            Promedio/día
+                        </div>
+
+                        <div class="fw-bold">
+                            {{ number_format(
+                                $item['promedio_periodo'],
+                                2
+                            ) }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="report-mobile-box">
+
+                    <div class="fw-semibold mb-1">
+                        <i class="bi bi-chat-left-text me-1"></i>
+                        Observación
+                    </div>
+
+                    {{ $producto->observacion ?: 'Sin observación' }}
+
+                </div>
+
+            </div>
+
+        @empty
+
+            <div class="text-center py-5 px-3">
+
+                <i
+                    class="bi bi-file-earmark-bar-graph fs-1 text-muted"
+                ></i>
+
+                <h6 class="fw-bold mt-3">
+
+                    No se encontraron resultados
+
+                </h6>
+
+                <p class="text-muted mb-0">
+
+                    Modifica los filtros seleccionados.
+
+                </p>
+
+            </div>
+
+        @endforelse
 
     </div>
 

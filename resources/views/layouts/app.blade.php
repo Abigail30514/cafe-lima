@@ -20,9 +20,21 @@
     >
 
     <style>
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
+
         body {
             margin: 0;
             background: #f5f6f8;
+            overflow-x: hidden;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            min-height: 100vh;
         }
 
         .sidebar {
@@ -40,7 +52,7 @@
 
             overflow-y: auto;
 
-            z-index: 1000;
+            z-index: 1045;
 
             transition:
                 transform 0.3s ease,
@@ -53,6 +65,7 @@
 
             width: calc(100% - 250px);
             min-width: 0;
+            overflow-x: hidden;
 
             transition:
                 margin-left 0.3s ease,
@@ -75,6 +88,23 @@
             width: 100%;
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | FONDO OSCURO PARA TABLET / MÓVIL
+        |--------------------------------------------------------------------------
+        */
+
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.42);
+            z-index: 1040;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -205,14 +235,34 @@
             font-weight: 500;
         }
 
-        @media (max-width: 991px) {
+        .content-wrapper {
+            min-width: 0;
+        }
+
+        .main-content img,
+        .main-content canvas,
+        .main-content svg {
+            max-width: 100%;
+        }
+
+        .main-content .table-responsive {
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .main-content .card {
+            min-width: 0;
+        }
+
+        @media (max-width: 991.98px) {
 
             .sidebar {
-                width: 250px;
+                width: min(280px, 86vw);
                 box-shadow: 5px 0 18px rgba(0, 0, 0, 0.18);
             }
 
-            .main-content {
+            .main-content,
+            body.sidebar-collapsed .main-content {
                 margin-left: 0;
                 width: 100%;
             }
@@ -225,12 +275,58 @@
                 transform: translateX(-100%);
             }
 
+            body:not(.sidebar-collapsed) .sidebar-backdrop {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+
             .system-title {
                 font-size: 15px;
             }
 
-            .main-content .container-fluid {
-                overflow-x: auto;
+            .top-navbar {
+                min-height: 64px;
+            }
+
+            .sidebar .nav-link {
+                min-height: 46px;
+            }
+
+            .btn,
+            .form-control,
+            .form-select {
+                min-height: 42px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+
+            .system-title {
+                font-size: 13px;
+                line-height: 1.25;
+            }
+
+            .sidebar-toggle {
+                width: 40px;
+                height: 40px;
+            }
+
+            .top-navbar .container-fluid {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+
+            .content-wrapper {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+                padding-top: 16px !important;
+                padding-bottom: 20px !important;
+            }
+
+            .sidebar .nav-link {
+                padding-top: 12px;
+                padding-bottom: 12px;
             }
         }
     </style>
@@ -249,7 +345,7 @@
 
             <!-- Logo del sistema -->
 
-            <div class="d<div class="d-flex align-items-center justify-content-between mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
 
                 <div class="d-flex align-items-center">
 
@@ -277,6 +373,7 @@
                     class="sidebar-close"
                     id="sidebarClose"
                     title="Ocultar menú"
+                    aria-label="Ocultar menú"
                 >
                     <i class="bi bi-chevron-left"></i>
                 </button>
@@ -478,27 +575,34 @@
 
     </aside>
 
+    <div
+        class="sidebar-backdrop"
+        id="sidebarBackdrop"
+        aria-hidden="true"
+    ></div>
+
     <!-- Contenido principal -->
 
     <main class="main-content">
 
         <nav class="navbar navbar-light bg-white shadow-sm top-navbar">
 
-        <div class="container-fluid px-4">
+        <div class="container-fluid px-3 px-md-4">
 
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 w-100">
 
                 <button
                     type="button"
                     class="sidebar-toggle"
                     id="sidebarToggle"
                     title="Mostrar u ocultar menú"
+                    aria-label="Mostrar u ocultar menú"
                 >
                     <i class="bi bi-list"></i>
                 </button>
 
 
-                <span class="navbar-brand system-title mb-0">
+                <span class="navbar-brand system-title mb-0 text-truncate">
 
                     Sistema de Gestión de Disponibilidad Restaurante Café de Lima
 
@@ -510,7 +614,7 @@
 
         </nav>
 
-        <div class="container-fluid px-4 py-4">
+        <div class="container-fluid px-3 px-md-4 py-3 py-md-4 content-wrapper">
 
             @yield('content')
 
@@ -606,100 +710,100 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
 
     const body = document.body;
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarClose = document.getElementById('sidebarClose');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+    const enlacesSidebar = document.querySelectorAll('.sidebar .nav-link');
 
-    const sidebarToggle =
-        document.getElementById('sidebarToggle');
+    const BREAKPOINT = 992;
 
-    const sidebarClose =
-        document.getElementById('sidebarClose');
+    function esMovilOTablet() {
+        return window.innerWidth < BREAKPOINT;
+    }
 
+    function aplicarEstadoInicial() {
 
-    /*
-    |--------------------------------------------------------------------------
-    | RECUPERAR ESTADO DEL SIDEBAR
-    |--------------------------------------------------------------------------
-    */
+        if (esMovilOTablet()) {
+            // En tablet y móvil el menú inicia cerrado.
+            body.classList.add('sidebar-collapsed');
+        } else {
+            // En PC se respeta la preferencia guardada.
+            const sidebarGuardado = localStorage.getItem('cafeLimaSidebar');
 
-    const sidebarGuardado =
-        localStorage.getItem('cafeLimaSidebar');
+            if (sidebarGuardado === 'collapsed') {
+                body.classList.add('sidebar-collapsed');
+            } else {
+                body.classList.remove('sidebar-collapsed');
+            }
+        }
+    }
 
+    function abrirSidebar() {
+        body.classList.remove('sidebar-collapsed');
 
-    if (sidebarGuardado === 'collapsed') {
+        if (!esMovilOTablet()) {
+            localStorage.setItem('cafeLimaSidebar', 'expanded');
+        }
+    }
 
+    function cerrarSidebar() {
         body.classList.add('sidebar-collapsed');
 
+        if (!esMovilOTablet()) {
+            localStorage.setItem('cafeLimaSidebar', 'collapsed');
+        }
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | MOSTRAR / OCULTAR DESDE NAVBAR
-    |--------------------------------------------------------------------------
-    */
 
     if (sidebarToggle) {
-
-        sidebarToggle.addEventListener(
-            'click',
-            function () {
-
-                body.classList.toggle(
-                    'sidebar-collapsed'
-                );
-
-
-                if (
-                    body.classList.contains(
-                        'sidebar-collapsed'
-                    )
-                ) {
-
-                    localStorage.setItem(
-                        'cafeLimaSidebar',
-                        'collapsed'
-                    );
-
-                } else {
-
-                    localStorage.setItem(
-                        'cafeLimaSidebar',
-                        'expanded'
-                    );
-
-                }
-
+        sidebarToggle.addEventListener('click', function () {
+            if (body.classList.contains('sidebar-collapsed')) {
+                abrirSidebar();
+            } else {
+                cerrarSidebar();
             }
-        );
-
+        });
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | OCULTAR DESDE SIDEBAR
-    |--------------------------------------------------------------------------
-    */
 
     if (sidebarClose) {
-
-        sidebarClose.addEventListener(
-            'click',
-            function () {
-
-                body.classList.add(
-                    'sidebar-collapsed'
-                );
-
-                localStorage.setItem(
-                    'cafeLimaSidebar',
-                    'collapsed'
-                );
-
-            }
-        );
-
+        sidebarClose.addEventListener('click', cerrarSidebar);
     }
 
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', cerrarSidebar);
+    }
+
+    enlacesSidebar.forEach(function (enlace) {
+        enlace.addEventListener('click', function () {
+            if (esMovilOTablet()) {
+                cerrarSidebar();
+            }
+        });
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (
+            event.key === 'Escape' &&
+            !body.classList.contains('sidebar-collapsed')
+        ) {
+            cerrarSidebar();
+        }
+    });
+
+    let anchoAnterior = window.innerWidth;
+
+    window.addEventListener('resize', function () {
+        const cruzoBreakpoint =
+            (anchoAnterior < BREAKPOINT && window.innerWidth >= BREAKPOINT) ||
+            (anchoAnterior >= BREAKPOINT && window.innerWidth < BREAKPOINT);
+
+        if (cruzoBreakpoint) {
+            aplicarEstadoInicial();
+        }
+
+        anchoAnterior = window.innerWidth;
+    });
+
+    aplicarEstadoInicial();
 });
 </script>
 

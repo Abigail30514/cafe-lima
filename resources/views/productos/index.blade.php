@@ -24,6 +24,105 @@
     .actions-column {
         white-space: nowrap;
     }
+
+    .product-mobile-item {
+        padding: 16px;
+        border-bottom: 1px solid #eceff2;
+    }
+
+    .product-mobile-item:last-child {
+        border-bottom: 0;
+    }
+
+    .product-mobile-title {
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .product-mobile-meta {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .product-mobile-observation {
+        background: #f8f9fa;
+        border: 1px solid #eceff2;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 767.98px) {
+
+        .product-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 14px;
+            margin-bottom: 20px !important;
+        }
+
+        .product-header h2 {
+            font-size: 1.55rem;
+        }
+
+        .product-header p {
+            font-size: 0.95rem;
+        }
+
+        .product-header .btn {
+            width: 100%;
+        }
+
+        .product-filter-card .card-body {
+            padding: 1rem;
+        }
+
+        .product-filter-actions {
+            display: grid !important;
+            grid-template-columns: 1fr auto;
+            gap: 8px !important;
+        }
+
+        .product-filter-actions .btn-primary {
+            width: 100%;
+        }
+
+        .product-card {
+            overflow: hidden;
+        }
+
+        .product-mobile-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .product-mobile-actions .btn {
+            width: 100%;
+            min-height: 42px;
+        }
+
+        .product-mobile-status-actions .btn {
+            min-height: 42px;
+            flex: 1 1 0;
+        }
+
+        .modal-dialog {
+            margin: 0.75rem;
+        }
+
+        .modal-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .modal-footer > * {
+            margin: 0 !important;
+            width: 100%;
+        }
+    }
 </style>
 
 {{-- Errores de validación --}}
@@ -43,7 +142,7 @@
 @endif
 
 {{-- Encabezado --}}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 product-header">
 
     <div>
         <h2 class="fw-bold mb-1">
@@ -68,7 +167,7 @@
 </div>
 
 {{-- Filtros --}}
-<div class="card product-card mb-4">
+<div class="card product-card product-filter-card mb-4">
 
     <div class="card-body">
 
@@ -78,7 +177,7 @@
         >
             <div class="row g-3 align-items-end">
 
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
 
                     <label class="form-label">
                         Buscar producto
@@ -94,7 +193,7 @@
 
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
 
                     <label class="form-label">
                         Categoría
@@ -125,7 +224,7 @@
 
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
 
                     <label class="form-label">
                         Estado
@@ -164,7 +263,7 @@
 
                 </div>
 
-                <div class="col-md-2 d-flex gap-2">
+                <div class="col-12 col-md-2 d-flex gap-2 product-filter-actions">
 
                     <button
                         type="submit"
@@ -194,7 +293,7 @@
 {{-- Tabla de productos --}}
 <div class="card product-card">
 
-    <div class="card-body p-0">
+    <div class="card-body p-0 d-none d-md-block">
 
         <div class="table-responsive">
 
@@ -401,6 +500,177 @@
             </table>
 
         </div>
+
+    </div>
+
+    {{-- VISTA MÓVIL --}}
+
+    <div class="d-md-none">
+
+        @forelse($productos as $producto)
+
+            <div class="product-mobile-item">
+
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+
+                    <div>
+                        <div class="product-mobile-title">
+                            {{ $producto->nombre }}
+                        </div>
+
+                        <div class="product-mobile-meta mt-1">
+                            <i class="bi bi-tag me-1"></i>
+                            {{ $producto->category->nombre ?? 'Sin categoría' }}
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+
+                        @if($producto->estado == 1)
+
+                            <span class="badge bg-success product-status">
+                                Disponible
+                            </span>
+
+                        @elseif($producto->estado == 2)
+
+                            <span class="badge bg-warning text-dark product-status">
+                                Bajo stock
+                            </span>
+
+                        @else
+
+                            <span class="badge bg-danger product-status">
+                                Agotado
+                            </span>
+
+                        @endif
+
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+
+                    @if($producto->destacado)
+
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-star-fill me-1"></i>
+                            Recomendado
+                        </span>
+
+                    @else
+
+                        <span class="badge bg-secondary">
+                            No recomendado
+                        </span>
+
+                    @endif
+
+                </div>
+
+                <div class="product-mobile-observation mb-3">
+                    <div class="fw-semibold mb-1">
+                        <i class="bi bi-chat-left-text me-1"></i>
+                        Observación
+                    </div>
+
+                    {{ $producto->observacion ?: 'Sin observación' }}
+                </div>
+
+                <form
+                    action="{{ route('productos.estado', $producto) }}"
+                    method="POST"
+                    class="d-flex gap-2 mb-3 product-mobile-status-actions"
+                >
+                    @csrf
+                    @method('PATCH')
+
+                    <button
+                        type="submit"
+                        name="estado"
+                        value="1"
+                        class="btn btn-success btn-sm"
+                        title="Marcar como disponible"
+                        @disabled($producto->estado == 1)
+                    >
+                        <i class="bi bi-check-circle"></i>
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="estado"
+                        value="2"
+                        class="btn btn-warning btn-sm"
+                        title="Marcar como bajo stock"
+                        @disabled($producto->estado == 2)
+                    >
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="estado"
+                        value="3"
+                        class="btn btn-danger btn-sm"
+                        title="Marcar como agotado"
+                        @disabled($producto->estado == 3)
+                    >
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+
+                </form>
+
+                <div class="product-mobile-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-warning btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalEditarProducto{{ $producto->id }}"
+                    >
+                        <i class="bi bi-pencil me-1"></i>
+                        Editar
+                    </button>
+
+                    <form
+                        action="{{ route('productos.destroy', $producto) }}"
+                        method="POST"
+                        class="formulario-eliminar"
+                        data-nombre="el producto {{ $producto->nombre }}"
+                    >
+                        @csrf
+                        @method('DELETE')
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger btn-sm"
+                        >
+                            <i class="bi bi-trash me-1"></i>
+                            Eliminar
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        @empty
+
+            <div class="text-center py-5 px-3">
+                <i class="bi bi-box-seam fs-1 text-muted"></i>
+
+                <h6 class="fw-bold mt-3">
+                    No se encontraron productos
+                </h6>
+
+                <p class="text-muted mb-0">
+                    Registra un producto o modifica los filtros.
+                </p>
+            </div>
+
+        @endforelse
 
     </div>
 
